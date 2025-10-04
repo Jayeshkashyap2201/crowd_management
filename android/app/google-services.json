@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "171188282356",
+    "project_id": "crowd-management-6c876",
+    "storage_bucket": "crowd-management-6c876.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:171188282356:android:42571f47a80b3d1f2e8fa1",
+        "android_client_info": {
+          "package_name": "com.example.crowd_management"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwXKb0V-ybxbLgnA80RrFQLG-5Pnoq4VQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

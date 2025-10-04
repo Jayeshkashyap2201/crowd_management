@@ -1,0 +1,56 @@
+import 'package:barcode_widget/barcode_widget.dart';
+import 'package:crowd_management/StaticVariables.dart';
+import 'package:flutter/material.dart';
+
+class LaneEnglish extends StatefulWidget {
+  const LaneEnglish({super.key});
+
+  @override
+  State<LaneEnglish> createState() => _LaneEnglishState();
+}
+
+class _LaneEnglishState extends State<LaneEnglish> {
+  @override
+  Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Lane",style: TextStyle(),),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+        elevation: 100,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 100),
+        child: Center(
+          child: SizedBox(
+            height: size.height * 0.8,
+            width: size.width * 0.8,
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    SizedBox(height: size.height * 0.02,),
+                    BarcodeWidget(data: "Your lane no. is 1", barcode: Barcode.qrCode()),
+                    SizedBox(height: size.height * 0.01,),
+                    Text(StaticVariable.loggedUserName,style: TextStyle(fontSize: size.width * 0.02),),
+                    SizedBox(height: size.height * 0.03,),
+                    Text("Scan this QR to register for Darshan",textAlign: TextAlign.center,style: TextStyle(fontSize: size.width * 0.04),),
+                    SizedBox(height: size.height * 0.03,),
+                    Row(
+                      children: [
+                        Text("Note :- ",style: TextStyle(color: Colors.red,fontSize: size.width * 0.05),),
+                        Expanded(child: Text("Make sure you are in the right line so that you do not face any problem.",style: TextStyle(fontSize: size.width * 0.03),))
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
