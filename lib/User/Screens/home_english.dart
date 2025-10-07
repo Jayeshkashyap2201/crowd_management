@@ -1,8 +1,7 @@
-import 'package:barcode_widget/barcode_widget.dart';
-import 'package:crowd_management/Screens/Lane_english.dart';
-import 'package:crowd_management/Screens/RestRooms_english.dart';
-import 'package:crowd_management/Screens/Washrooms_english.dart';
-import 'package:crowd_management/Screens/Water_english.dart';
+import 'package:crowd_management/User/Screens/Lane_english.dart';
+import 'package:crowd_management/User/Screens/RestRooms_english.dart';
+import 'package:crowd_management/User/Screens/Washrooms_english.dart';
+import 'package:crowd_management/User/Screens/Water_english.dart';
 import 'package:flutter/material.dart';
 
 class Home_english extends StatefulWidget {
@@ -52,16 +51,16 @@ class _Home_englishState extends State<Home_english> with TickerProviderStateMix
                 title: Text("Crowd Management System", style: TextStyle(
                     color: Colors.white, fontWeight: FontWeight.bold,fontSize: size.width * 0.045),),
               ),
-              expandedHeight: 250,
+              expandedHeight: size.height * 0.319,
               surfaceTintColor: Colors.black87,
               backgroundColor: Colors.purple,
               elevation: 100,
               shadowColor: Colors.white,
               leading: Icon(
-                Icons.temple_hindu, color: Colors.white, size: 50,),
+                Icons.temple_hindu, color: Colors.white, size: size.height*0.05,),
             ),
             SliverPadding(
-              padding: EdgeInsets.only(top: 20,right: 10,left: 10,bottom: 10),
+              padding: EdgeInsets.only(top: size.height*0.02,right: size.width*0.015,left: size.width*0.015,bottom: size.height*0.01),
               sliver: SliverGrid(
                 delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index){
@@ -77,6 +76,7 @@ class _Home_englishState extends State<Home_english> with TickerProviderStateMix
                           children: [
                             SizedBox(
                               height: size.height *0.05,
+                              
                               width: size.width * 0.05,
                               child: FittedBox(
                                 fit: BoxFit.cover,

@@ -37,6 +37,7 @@ dependencies:
   firebase_core: ^4.1.0
   firebase_auth: ^6.0.2
   barcode_widget: ^2.0.4
+  flutter_bloc: ^9.1.1
 
 dev_dependencies:
   flutter_test:
