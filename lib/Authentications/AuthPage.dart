@@ -1,10 +1,13 @@
 import 'package:crowd_management/Cubit/StateData.dart';
 import 'package:crowd_management/Cubit/States.dart';
 import 'package:crowd_management/StaticVariables.dart';
+import 'package:crowd_management/User/Screens/BottomBar.dart';
+import 'package:crowd_management/User/Screens/UserDetails.dart';
 import 'package:crowd_management/User/Screens/home_english.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Authpage extends StatefulWidget {
   const Authpage({super.key});
@@ -43,7 +46,7 @@ class _AuthpageState extends State<Authpage> with SingleTickerProviderStateMixin
     return Scaffold(
       appBar: AppBar(
         animateColor: true,
-        title: Text("TabBar with Ticker"),
+        title: Text("Login Yourself"),
         bottom: TabBar(
           controller: _tabController,
           tabs: [
@@ -61,7 +64,7 @@ class _AuthpageState extends State<Authpage> with SingleTickerProviderStateMixin
           }
           if (state is Loaded) {
             Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => Home_english()));
+              context, MaterialPageRoute(builder: (context) => Userdetails()));
           }
         },
         builder : (context , state) {
@@ -89,15 +92,14 @@ class _AuthpageState extends State<Authpage> with SingleTickerProviderStateMixin
                       SingleChildScrollView(
                         child: SizedBox(
                           width: size.width * 0.1,
-                          height: size.height * 0.45,
+                          height: size.height * 0.5,
                           child: Card(
-                            color: Colors.blue.shade100,
+                            color: Colors.white,
                             child: Column(
                               children: [
                                 SizedBox(height: size.height * 0.07,),
                                 TextField(
-                                  keyboardType: TextInputType
-                                      .emailAddress,
+                                  keyboardType: TextInputType.emailAddress,
                                   enabled: true,
                                   controller: email_pilgrim,
                                   obscureText: false,
@@ -109,50 +111,76 @@ class _AuthpageState extends State<Authpage> with SingleTickerProviderStateMixin
                                 ),
                                 SizedBox(height: 50,),
                                 TextField(
-                                  keyboardType: TextInputType
-                                      .emailAddress,
+                                  keyboardType: TextInputType.emailAddress,
                                   enabled: true,
                                   controller: pass_pilgrim,
                                   obscureText: secureText,
                                   obscuringCharacter: "*",
                                   decoration: InputDecoration(
-                                      labelText: "ex - password",
-                                      hintText: "ex - 123abs@&",
-                                      prefixIcon: Icon(Icons.email),
-                                      suffixIcon: IconButton(
-                                        onPressed: () {
-                                          seeText();
-                                        },
-                                        icon: Icon(
-                                            Icons.remove_red_eye_outlined),
-                                      )
+                                    labelText: "ex - password",
+                                    hintText: "ex - 123abs@&",
+                                    prefixIcon: Icon(Icons.email),
+                                    suffixIcon: IconButton(
+                                      onPressed: () {
+                                        seeText();
+                                      },
+                                      icon: Icon(
+                                          Icons.remove_red_eye_outlined),
+                                    )
                                   ),
                                 ),
                                 SizedBox(height: 50,),
-                                MaterialButton(
-                                  onPressed: () async {
-                                    await context.read<StateData>().fetching(
-                                        email_pilgrim.text,
-                                        pass_pilgrim.text);
-                                  //   await ScaffoldMessenger
-                                  //       .of(context)
-                                  //       .showSnackBar(
-                                  //     SnackBar(content: Text(
-                                  //         "Verification email sent! Check your inbox.")),
-                                  //   );
-                                  //   Navigator.push(context, MaterialPageRoute(
-                                  //     builder: (context) =>
-                                  //         Home_english()));
-                                  },
-                                  child: Card(
-                                      color: Colors.blue,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text("Verify",
-                                          style: TextStyle(
-                                              fontSize: size.width * 0.04),),
-                                      )
-                                  ),
+                                Row(
+                                  children: [
+                                    MaterialButton(
+                                      onPressed: ()async{
+                                         UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email_pilgrim.text, password: pass_pilgrim.text);
+                                         User? user = userCredential.user;
+
+                                         if(user != null){
+                                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("The verification email has been sent please verify firstly")));
+                                          return;
+                                         }
+                                         if (user != null && user.emailVerified == true) {
+                                           Navigator.pushReplacement(
+                                             context,
+                                             MaterialPageRoute(builder: (context) => Userdetails()),
+                                           );
+                                           ScaffoldMessenger.of(context).showSnackBar(
+                                             SnackBar(content: Text("Your account has been created successfully!")),
+                                           );
+                                         }
+                                         else {
+                                           await user?.sendEmailVerification();
+                                           ScaffoldMessenger.of(context).showSnackBar(
+                                             SnackBar(content: Text("Please verify your email before logging in.")),
+                                           );
+                                         }
+                                      },
+                                      child:Card(
+                                        color: Colors.blue,
+                                        child: Padding(
+                                          padding: EdgeInsets.all(8),
+                                          child: Text("Signup"),
+                                        ),
+                                      ) ,
+                                    ),
+                                    Expanded(child: Container()),
+                                    MaterialButton(
+                                      onPressed: () async {
+                                        await context.read<StateData>().fetching(email_pilgrim.text, pass_pilgrim.text);
+                                      },
+                                      child: Card(
+                                          color: Colors.blue,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text("Verify",
+                                              style: TextStyle(
+                                                  fontSize: size.width * 0.04),),
+                                          )
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -160,112 +188,129 @@ class _AuthpageState extends State<Authpage> with SingleTickerProviderStateMixin
                         ),
                       ),
                       SingleChildScrollView(
-                          child: SizedBox(
-                            width: size.width * 0.1,
-                            height: size.height * 0.53,
-                            child: Card(
-                              color: Colors.blue.shade100,
-                              child: Column(
-                                children: [
-                                  SizedBox(height: size.height * 0.05,),
-                                  TextField(
-                                    keyboardType: TextInputType
-                                        .emailAddress,
-                                    enabled: true,
-                                    controller: email_manager,
-                                    obscureText: false,
-                                    decoration: InputDecoration(
-                                      labelText: "email",
-                                      hintText: "abc@gmail.com",
-                                      prefixIcon: Icon(Icons.email),
-                                    ),
+                        child: SizedBox(
+                          width: size.width * 0.1,
+                          height: size.height * 0.5,
+                          child: Card(
+                            color: Colors.white,
+                            child: Column(
+                              children: [
+                                SizedBox(height: size.height * 0.05,),
+                                TextField(
+                                  keyboardType: TextInputType.emailAddress,
+                                  enabled: true,
+                                  controller: email_manager,
+                                  obscureText: false,
+                                  decoration: InputDecoration(
+                                    labelText: "email",
+                                    hintText: "abc@gmail.com",
+                                    prefixIcon: Icon(Icons.email),
                                   ),
-                                  SizedBox(height: 25,),
-                                  TextField(
-                                    keyboardType: TextInputType
-                                        .emailAddress,
-                                    enabled: true,
-                                    controller: pass_manager,
-                                    obscureText: secureText,
-                                    obscuringCharacter: "*",
-                                    decoration: InputDecoration(
-                                        labelText: "ex - password",
-                                        hintText: "ex - 123abs@&",
-                                        prefixIcon: Icon(Icons.email),
-                                        suffixIcon: IconButton(
-                                          onPressed: () {
-                                            seeText();
-                                          },
-                                          icon: Icon(Icons
-                                              .remove_red_eye_outlined),
-                                        )
-                                    ),
+                                ),
+                                SizedBox(height: 25,),
+                                TextField(
+                                  keyboardType: TextInputType.emailAddress,
+                                  enabled: true,
+                                  controller: pass_manager,
+                                  obscureText: secureText,
+                                  obscuringCharacter: "*",
+                                  decoration: InputDecoration(
+                                    labelText: "ex - password",
+                                    hintText: "ex - 123abs@&",
+                                    prefixIcon: Icon(Icons.email),
+                                    suffixIcon: IconButton(
+                                      onPressed: () {
+                                        seeText();
+                                      },
+                                      icon: Icon(Icons.remove_red_eye_outlined),
+                                    )
                                   ),
-                                  SizedBox(height: 25,),
-                                  TextField(
-                                    keyboardType: TextInputType
-                                        .emailAddress,
-                                    enabled: true,
-                                    controller: managerID,
-                                    obscureText: secureText,
-                                    obscuringCharacter: "*",
-                                    decoration: InputDecoration(
-                                        labelText: "Manager ID",
-                                        hintText: "ex - 123abs@&",
-                                        prefixIcon: Icon(Icons.email),
-                                        suffixIcon: IconButton(
-                                          onPressed: () {
-                                            seeText();
-                                          },
-                                          icon: Icon(Icons
-                                              .remove_red_eye_outlined),
-                                        )
-                                    ),
+                                ),
+                                SizedBox(height: 25,),
+                                TextField(
+                                  keyboardType: TextInputType.emailAddress,
+                                  enabled: true,
+                                  controller: managerID,
+                                  obscureText: secureText,
+                                  obscuringCharacter: "*",
+                                  decoration: InputDecoration(
+                                    labelText: "Manager ID",
+                                    hintText: "ex - 123abs@&",
+                                    prefixIcon: Icon(Icons.email),
+                                    suffixIcon: IconButton(
+                                      onPressed: () {
+                                        seeText();
+                                      },
+                                      icon: Icon(Icons.remove_red_eye_outlined),
+                                    )
                                   ),
-                                  SizedBox(height: 30,),
-                                  MaterialButton(
-                                    onPressed: () async {
+                                ),
+                                SizedBox(height: 30,),
+                                MaterialButton(
+                                  onPressed: () async {
+                                    try{
                                       User? manager = FirebaseAuth.instance
                                           .currentUser;
                                       UserCredential managercredential = await FirebaseAuth
-                                          .instance
-                                          .signInWithEmailAndPassword(
+                                          .instance.signInWithEmailAndPassword(
                                           email: email_manager.text,
-                                          password: pass_manager.text);
+                                          password: pass_manager.text
+                                      );
                                       if (manager != null &&
                                           !manager.emailVerified) {
-                                        await manager
-                                            .sendEmailVerification();
+                                        await manager.sendEmailVerification();
                                         ScaffoldMessenger
                                             .of(context)
                                             .showSnackBar(
                                           SnackBar(content: Text(
                                               "Verification email sent! Check your inbox.")),
                                         );
+                                        return;
                                       }
                                       if (managercredential.user!
                                           .emailVerified) {
-                                        Navigator.push(context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    Home_english()));
+                                        // Navigator.push(
+                                        //     context, MaterialPageRoute(
+                                        //     builder: (context) => Bottombar()));
                                       }
-                                    },
-                                    child: Card(
-                                        color: Colors.blue,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text("Verify",
-                                            style: TextStyle(
-                                                fontSize: size.width *
-                                                    0.04),),
-                                        )
-                                    ),
+                                      final snapshot = await FirebaseFirestore.instance.collection("users").where("email", isEqualTo: email_manager.text).get();
+                                      if (snapshot.docs.isNotEmpty) {
+                                        final userData = snapshot.docs.first.data();
+                                        if (userData["managerKey"] == managerID.text) {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(builder: (context) => Bottombar()),
+                                          );
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text("Invalid Manager ID")),
+                                          );
+                                        }
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text("Manager not found")),
+                                        );
+                                      }
+                                    }
+                                    catch(e){
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text("Login faild : ${e.toString()}"))
+                                      );
+                                    }
+                                  },
+                                  child: Card(
+                                    color: Colors.blue,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text("Verify",
+                                        style: TextStyle(fontSize: size.width * 0.04),),
+                                    )
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          )
+                          ),
+                        )
                       ),
                     ]
                   ),

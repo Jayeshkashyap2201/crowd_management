@@ -1,8 +1,11 @@
+import 'package:crowd_management/StaticVariables.dart';
 import 'package:crowd_management/User/Screens/Lane_english.dart';
-import 'package:crowd_management/User/Screens/RestRooms_english.dart';
+import 'package:crowd_management/User/Screens/Suggestion.dart';
 import 'package:crowd_management/User/Screens/Washrooms_english.dart';
 import 'package:crowd_management/User/Screens/Water_english.dart';
 import 'package:flutter/material.dart';
+
+import 'BottomBar.dart';
 
 class Home_english extends StatefulWidget {
   const Home_english({super.key});
@@ -16,19 +19,19 @@ class _Home_englishState extends State<Home_english> with TickerProviderStateMix
     LaneEnglish(),
     WashroomsEnglish(),
     WaterEnglish(),
-    RestroomsEnglish(),
+    Suggestion(),
   ];
   List<Widget> Items =[
     Icon(Icons.qr_code,color: Colors.grey),
     Icon(Icons.wash_rounded,color: Colors.orange.shade200,),
     Icon(Icons.water_drop,color: Colors.blue,),
-    Icon(Icons.family_restroom,color: Colors.blue,)
+    Icon(Icons.feedback_rounded,color: Colors.yellow.shade700,)
   ];
   List<Widget>Name =[
     Text("QR for entry"),
     Text("Washroom"),
     Text("Drinking Water"),
-    Text("Restroom"),
+    Text("Feedback"),
   ];
 
   @override
@@ -66,27 +69,33 @@ class _Home_englishState extends State<Home_english> with TickerProviderStateMix
                 (BuildContext context, int index){
                   return GestureDetector(
                     onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>pages[index]));
+                      setState(() {
+                        StaticVariable.page = index+1;
+                      });
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>Bottombar()));
+                      //Navigator.push(context, MaterialPageRoute(builder: (context)=>pages[index]));
                     },
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              height: size.height *0.05,
-                              
-                              width: size.width * 0.05,
-                              child: FittedBox(
-                                fit: BoxFit.cover,
-                                child: Items[index]
-                              )
-                            ),
-                            SizedBox(height: size.height * 0.01,),
-                            Name[index],
-                          ],
-                        )
+                    child: Hero(
+                      tag: "moved_from_homepage$index",
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: size.height *0.05,
+                                width: size.width * 0.05,
+                                child: FittedBox(
+                                  fit: BoxFit.cover,
+                                  child: Items[index]
+                                ),
+                              ),
+                              SizedBox(height: size.height * 0.01,),
+                              Name[index],
+                            ],
+                          )
+                        ),
                       ),
                     ),
                   );

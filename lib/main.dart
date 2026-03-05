@@ -1,11 +1,11 @@
-import 'package:crowd_management/Cubit/StateData.dart';
 import 'package:crowd_management/Authentications/AuthPage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:crowd_management/Cubit/StateData.dart';
+import 'package:crowd_management/User/Screens/Suggestion.dart';
+import 'package:crowd_management/User/Screens/UserDetails.dart';
+import 'package:crowd_management/User/Screens/home_english.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'Authentications/checkUser.dart';
 
 void main() async{
   WidgetsFlutterBinding().ensureSemantics();
@@ -19,7 +19,7 @@ void main() async{
       ],
       child:
       MaterialApp(
-        home: Authpage(),
+        home: Suggestion(),
       debugShowCheckedModeBanner: false,
         ),
     ),
