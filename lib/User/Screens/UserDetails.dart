@@ -13,7 +13,7 @@ class Userdetails extends StatefulWidget {
 
 class _UserdetailsState extends State<Userdetails> {
   String? current;
-  late String state = "unkonwn";
+  String state = "unkonwn";
   String? currentGender;
   List<String> gender = [
     "male",
@@ -93,7 +93,10 @@ class _UserdetailsState extends State<Userdetails> {
           if (currentState is Loaded) {
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Submitted Successfully")),
+              const SnackBar(
+                backgroundColor: Colors.green,
+                content: Text("Submitted Successfully",style: TextStyle(color: Colors.white),)
+              ),
             );
             Navigator.pushReplacement(
               context,
@@ -320,7 +323,6 @@ class _UserdetailsState extends State<Userdetails> {
                             gender: currentGender!,
                             state: state,
                           );
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Bottombar()));
                         }
                         else {
                           ScaffoldMessenger.of(context).showSnackBar(
