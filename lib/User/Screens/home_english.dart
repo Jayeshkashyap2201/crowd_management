@@ -4,7 +4,6 @@ import 'package:crowd_management/User/Screens/Suggestion.dart';
 import 'package:crowd_management/User/Screens/Washrooms_english.dart';
 import 'package:crowd_management/User/Screens/Water_english.dart';
 import 'package:flutter/material.dart';
-
 import 'BottomBar.dart';
 
 class Home_english extends StatefulWidget {
@@ -84,7 +83,7 @@ class _Home_englishState extends State<Home_english> with TickerProviderStateMix
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SizedBox(
-                                height: size.height *0.05,
+                                height: size.height * 0.05,
                                 width: size.width * 0.05,
                                 child: FittedBox(
                                   fit: BoxFit.cover,
@@ -119,9 +118,8 @@ class _Home_englishState extends State<Home_english> with TickerProviderStateMix
                   SizedBox(height: size.height * 0.03),
                   Text("India’s rich spiritual heritage draws millions of devotees and tourists to temples, festivals, and pilgrimage sites every year. While these sacred places symbolize faith and unity, they also face challenges like overcrowding, long queues, health risks, and mismanagement during peak times.\nThe Crowd Management System is a smart, technology-driven solution designed to enhance safety, convenience, and the overall experience of devotees. Through real-time monitoring, intelligent crowd control, and digital communication tools, the system ensures smooth movement, reduces waiting times, and provides emergency support when needed.\nOur goal is to create a safer, more organized, and spiritually fulfilling environment for every pilgrim — blending traditional devotion with modern innovation.",textAlign: TextAlign.center,style: TextStyle(color: Colors.white,fontSize: size.width*0.04),),
                   SizedBox(height: size.height * 0.03),
-
                 ],
-              )
+              ),
             ),
           ],
         ),

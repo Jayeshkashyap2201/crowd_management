@@ -38,7 +38,7 @@ class _LaneEnglishState extends State<LaneEnglish> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SizedBox(height: size.height * 0.02,),
-                          BarcodeWidget(data: "Your lane no. is 1", barcode: Barcode.qrCode(), height: size.width * 0.5, width: size.width * 0.5,),
+                          BarcodeWidget(data: StaticVariable.qrData, barcode: Barcode.qrCode(), height: size.width * 0.5, width: size.width * 0.5,),
                           SizedBox(height: size.height * 0.01,),
                           Text(StaticVariable.loggedUserName,style: TextStyle(fontSize: size.width * 0.02),),
                           SizedBox(height: size.height * 0.03,),

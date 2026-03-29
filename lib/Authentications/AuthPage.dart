@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lottie/lottie.dart';
 
 class Authpage extends StatefulWidget {
   const Authpage({super.key});
@@ -19,24 +20,23 @@ class Authpage extends StatefulWidget {
 class _AuthpageState extends State<Authpage> with SingleTickerProviderStateMixin{
   static var email_pilgrim = TextEditingController();
   static var pass_pilgrim = TextEditingController();
-  static var email_manager = TextEditingController();
-  static var pass_manager = TextEditingController();
-  static var managerID = TextEditingController();
   bool secureText = true;
   late TabController _tabController;
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 1, vsync: this);
   }
   @override
   void seeText(){
     setState(() {
-      secureText = false;
+      secureText =! secureText;
     });
   }
   @override
   void dispose() {
+    email_pilgrim.dispose();
+    pass_pilgrim.dispose();
     _tabController.dispose();
     super.dispose();
   }
@@ -44,14 +44,28 @@ class _AuthpageState extends State<Authpage> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
+        title: Text("Login Yourself",style: TextStyle(color: Colors.white),),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF0F2027),
+                Color(0xFF203A43),
+                Color(0xFF2C5364)
+              ],
+            ),
+          ),
+        ),
         animateColor: true,
-        title: Text("Login Yourself"),
         bottom: TabBar(
+          indicatorColor: Colors.green,
+          labelColor: Colors.blue,
           controller: _tabController,
           tabs: [
-            Tab(icon: Icon(Icons.person), text: "Pilgrim",),
-            Tab(icon: Icon(Icons.manage_history_rounded), text: "Manager"),
+            Tab(icon: Icon(Icons.person,color: Colors.white,), text: "Pilgrim",),
+            //Tab(icon: Icon(Icons.manage_history_rounded), text: "Manager"),
           ],
         ),
       ),
@@ -69,19 +83,34 @@ class _AuthpageState extends State<Authpage> with SingleTickerProviderStateMixin
           },
           builder : (context , state) {
             if (state is Loading) {
-              return Center(child: CircularProgressIndicator(),);
+              return Scaffold(
+                backgroundColor: Colors.white,
+                body: Center(
+                  child: Lottie.network("https://lottiefiles.com/free-animation/faceid-green-M1tKk6bIaB",height: 300,reverse: true,repeat: true),
+                ),
+              );
             }
             return Stack(
               children: [
                 SizedBox(
                   height: size.height * 1,
                   width: size.width * 1,
-                  child: Image(image: AssetImage("assets/background_auth.jpg"),
-                    fit: BoxFit.cover,),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Color(0xff134e5e),
+                          Color(0xff1f3c88),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                  ),
                 ),
                 Positioned(
-                  left: size.width * 0.1,
-                  right: size.width * 0.1,
+                  left: size.width * 0.05,
+                  right: size.width * 0.05,
                   top: size.height * 0.13,
                   bottom: size.height * 0.1,
                   child: SizedBox(
@@ -91,226 +120,152 @@ class _AuthpageState extends State<Authpage> with SingleTickerProviderStateMixin
                         children: [
                           SingleChildScrollView(
                             child: SizedBox(
-                              width: size.width * 0.1,
-                              height: size.height * 0.5,
-                              child: Card(
-                                color: Colors.white,
-                                child: Column(
-                                  children: [
-                                    SizedBox(height: size.height * 0.07,),
-                                    TextField(
-                                      keyboardType: TextInputType.emailAddress,
-                                      enabled: true,
-                                      controller: email_pilgrim,
-                                      obscureText: false,
-                                      decoration: InputDecoration(
-                                        labelText: "email",
-                                        hintText: "abc@gmail.com",
-                                        prefixIcon: Icon(Icons.email),
-                                      ),
-                                    ),
-                                    SizedBox(height: 50,),
-                                    TextField(
-                                      keyboardType: TextInputType.emailAddress,
-                                      enabled: true,
-                                      controller: pass_pilgrim,
-                                      obscureText: secureText,
-                                      obscuringCharacter: "*",
-                                      decoration: InputDecoration(
-                                          labelText: "ex - password",
-                                          hintText: "ex - 123abs@&",
-                                          prefixIcon: Icon(Icons.email),
-                                          suffixIcon: IconButton(
-                                            onPressed: () {
-                                              seeText();
-                                            },
-                                            icon: Icon(
-                                                Icons.remove_red_eye_outlined),
-                                          )
-                                      ),
-                                    ),
-                                    SizedBox(height: 50,),
-                                    Row(
-                                      children: [
-                                        MaterialButton(
-                                          onPressed: ()async{
-                                            UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email_pilgrim.text, password: pass_pilgrim.text);
-                                            User? user = userCredential.user;
-
-                                            if(user != null){
-                                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("The verification email has been sent please verify firstly")));
-                                              return;
-                                            }
-                                            if (user != null && user.emailVerified == true) {
-                                              Navigator.pushReplacement(
-                                                context,
-                                                MaterialPageRoute(builder: (context) => Userdetails()),
-                                              );
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(content: Text("Your account has been created successfully!")),
-                                              );
-                                            }
-                                            else {
-                                              await user?.sendEmailVerification();
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(content: Text("Please verify your email before logging in.")),
-                                              );
-                                            }
-                                          },
-                                          child:Card(
-                                            color: Colors.blue,
-                                            child: Padding(
-                                              padding: EdgeInsets.all(8),
-                                              child: Text("Signup"),
-                                            ),
-                                          ) ,
-                                        ),
-                                        Expanded(child: Container()),
-                                        MaterialButton(
-                                          onPressed: () async {
-                                            await context.read<StateData>().fetching(email_pilgrim.text, pass_pilgrim.text);
-                                          },
-                                          child: Card(
-                                              color: Colors.blue,
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(8.0),
-                                                child: Text("Verify",
-                                                  style: TextStyle(
-                                                      fontSize: size.width * 0.04),),
-                                              )
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                              width: double.maxFinite,
+                              height: size.height * 0.45,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color(0xFF0F2027),
+                                      Color(0xFF203A43),
+                                      Color(0xFF2C5364)
+                                    ]
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
-                          SingleChildScrollView(
-                              child: SizedBox(
-                                width: size.width * 0.1,
-                                height: size.height * 0.5,
-                                child: Card(
-                                  color: Colors.white,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
                                   child: Column(
                                     children: [
-                                      SizedBox(height: size.height * 0.05,),
+                                      SizedBox(height: size.height * 0.07,),
                                       TextField(
+                                        style: TextStyle(color: Colors.white),
                                         keyboardType: TextInputType.emailAddress,
                                         enabled: true,
-                                        controller: email_manager,
+                                        controller: email_pilgrim,
                                         obscureText: false,
                                         decoration: InputDecoration(
                                           labelText: "email",
                                           hintText: "abc@gmail.com",
-                                          prefixIcon: Icon(Icons.email),
+                                          labelStyle: TextStyle(color: Colors.white),
+                                          hintStyle: TextStyle(color: Colors.white),
+                                          prefixIcon: Icon(Icons.email,color: Colors.white),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              width: 2,
+                                              color: Colors.blue,
+                                            ),
+                                            borderRadius: BorderRadius.circular(30),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              width: 2,
+                                              color: Colors.blue,
+                                            ),
+                                            borderRadius: BorderRadius.circular(30),
+                                          ),
                                         ),
                                       ),
-                                      SizedBox(height: 25,),
+                                      SizedBox(height: 50,),
                                       TextField(
+                                        style: TextStyle(color: Colors.white),
                                         keyboardType: TextInputType.emailAddress,
                                         enabled: true,
-                                        controller: pass_manager,
+                                        controller: pass_pilgrim,
                                         obscureText: secureText,
                                         obscuringCharacter: "*",
                                         decoration: InputDecoration(
-                                            labelText: "ex - password",
+                                            labelText: "password",
                                             hintText: "ex - 123abs@&",
-                                            prefixIcon: Icon(Icons.email),
+                                          labelStyle: TextStyle(color: Colors.white),
+                                          hintStyle: TextStyle(color: Colors.white),
+                                            prefixIcon: Icon(Icons.password,color: Colors.white),
                                             suffixIcon: IconButton(
                                               onPressed: () {
                                                 seeText();
                                               },
-                                              icon: Icon(Icons.remove_red_eye_outlined),
-                                            )
+                                              icon: Icon(
+                                                  Icons.remove_red_eye_outlined,color: Colors.white,),
+                                            ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              width: 2,
+                                              color: Colors.blue,
+                                            ),
+                                            borderRadius: BorderRadius.circular(30),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              width: 2,
+                                              color: Colors.blue,
+                                            ),
+                                            borderRadius: BorderRadius.circular(30),
+                                          ),
                                         ),
                                       ),
-                                      SizedBox(height: 25,),
-                                      TextField(
-                                        keyboardType: TextInputType.emailAddress,
-                                        enabled: true,
-                                        controller: managerID,
-                                        obscureText: secureText,
-                                        obscuringCharacter: "*",
-                                        decoration: InputDecoration(
-                                            labelText: "Manager ID",
-                                            hintText: "ex - 123abs@&",
-                                            prefixIcon: Icon(Icons.email),
-                                            suffixIcon: IconButton(
-                                              onPressed: () {
-                                                seeText();
-                                              },
-                                              icon: Icon(Icons.remove_red_eye_outlined),
-                                            )
-                                        ),
-                                      ),
-                                      SizedBox(height: 30,),
-                                      MaterialButton(
-                                        onPressed: () async {
-                                          try{
-                                            User? manager = FirebaseAuth.instance
-                                                .currentUser;
-                                            UserCredential managercredential = await FirebaseAuth
-                                                .instance.signInWithEmailAndPassword(
-                                                email: email_manager.text,
-                                                password: pass_manager.text
-                                            );
-                                            if (manager != null &&
-                                                !manager.emailVerified) {
-                                              await manager.sendEmailVerification();
-                                              ScaffoldMessenger
-                                                  .of(context)
-                                                  .showSnackBar(
-                                                SnackBar(content: Text(
-                                                    "Verification email sent! Check your inbox.")),
-                                              );
-                                              return;
-                                            }
-                                            if (managercredential.user!
-                                                .emailVerified) {
-                                              // Navigator.push(
-                                              //     context, MaterialPageRoute(
-                                              //     builder: (context) => Bottombar()));
-                                            }
-                                            final snapshot = await FirebaseFirestore.instance.collection("users").where("email", isEqualTo: email_manager.text).get();
-                                            if (snapshot.docs.isNotEmpty) {
-                                              final userData = snapshot.docs.first.data();
-                                              if (userData["managerKey"] == managerID.text) {
+                                      SizedBox(height: 50,),
+                                      Row(
+                                        children: [
+                                          MaterialButton(
+                                            onPressed: ()async{
+                                              UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email_pilgrim.text, password: pass_pilgrim.text);
+                                              User? user = userCredential.user;
+
+                                              if(user != null){
+                                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("The verification email has been sent please verify firstly")));
+                                                return;
+                                              }
+                                              if (user != null && user.emailVerified == true) {
                                                 Navigator.pushReplacement(
                                                   context,
-                                                  MaterialPageRoute(builder: (context) => Bottombar()),
+                                                  MaterialPageRoute(builder: (context) => Userdetails()),
                                                 );
-                                              } else {
                                                 ScaffoldMessenger.of(context).showSnackBar(
-                                                  SnackBar(content: Text("Invalid Manager ID")),
+                                                  SnackBar(content: Text("Your account has been created successfully!")),
                                                 );
                                               }
-                                            } else {
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(content: Text("Manager not found")),
-                                              );
-                                            }
-                                          }
-                                          catch(e){
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(content: Text("Login faild : ${e.toString()}"))
-                                            );
-                                          }
-                                        },
-                                        child: Card(
-                                            color: Colors.blue,
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child: Text("Verify",
-                                                style: TextStyle(fontSize: size.width * 0.04),),
-                                            )
-                                        ),
+                                              else {
+                                                await user?.sendEmailVerification();
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  SnackBar(content: Text("Please verify your email before logging in.")),
+                                                );
+                                              }
+                                            },
+                                            child:Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(20),
+                                                color: Colors.white,
+                                              ),
+                                              child: Padding(
+                                                padding: EdgeInsets.symmetric(vertical: 10,horizontal: 15),
+                                                child: Text("Signup", style: TextStyle(fontSize: size.width * 0.035)),
+                                              ),
+                                            ) ,
+                                          ),
+                                          Expanded(child: Container()),
+                                          MaterialButton(
+                                            onPressed: () async {
+                                              await context.read<StateData>().fetching(email_pilgrim.text, pass_pilgrim.text);
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(20),
+                                                color: Colors.white,
+                                              ),
+                                              child: Padding(
+                                                padding: EdgeInsets.symmetric(vertical: 10,horizontal: 15),
+                                                child: Text("Verify", style: TextStyle(fontSize: size.width * 0.035),
+                                                ),
+                                              )
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
                                 ),
-                              )
+                              ),
+                            ),
                           ),
                         ]
                     ),

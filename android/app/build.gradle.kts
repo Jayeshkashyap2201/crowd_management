@@ -5,7 +5,7 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
     id("com.google.gms.google-services")
 }
-
+import org.gradle.api.JavaVersion
 android {
     namespace = "com.example.crowd_management"
     compileSdk = flutter.compileSdkVersion
@@ -17,7 +17,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = "11"
     }
 
     defaultConfig {
@@ -45,7 +45,7 @@ flutter {
 }
 dependencies {
     // Import the Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
+    implementation(platform("com.google.firebase:firebase-bom:34.10.0"))
 
 
     // TODO: Add the dependencies for Firebase products you want to use
